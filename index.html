@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBT Diary Card</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>DBT Diary Card</h1>
+    </header>
+    <main>
+        <form id="diary-form">
+            <div id="date-display"></div>
+            <div class="form-group">
+                <label>Emotions</label>
+                <div id="emotion-ratings"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="notable-moments">Notable moments from today</label>
+                <textarea id="notable-moments" rows="4"></textarea>
+            </div>
+
+            <button type="submit">Save Entry</button>
+        </form>
+        <section id="entries-section">
+            <h2>Past Entries</h2>
+            <div id="entries-log">
+            </div>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>

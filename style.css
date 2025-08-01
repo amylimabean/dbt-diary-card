@@ -1,0 +1,233 @@
+:root {
+    --bg-color: #121212;
+    --primary-text-color: #E0E0E0;
+    --secondary-text-color: #BDBDBD;
+    --surface-color: #1E1E1E;
+    --border-color: #333;
+
+    --color-red: #F47174;
+    --color-green: #5DE2A2;
+}
+
+body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: var(--primary-text-color);
+}
+
+header {
+    background: var(--surface-color);
+    padding: 2rem 0;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+main {
+    padding: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+form, section#entries-section {
+    background-color: var(--surface-color);
+    border-radius: 24px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+#date-display {
+    font-size: 1.2rem;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--secondary-text-color);
+}
+
+.form-group, fieldset {
+    margin-bottom: 2rem;
+    padding: 0;
+    border: none;
+}
+
+legend {
+    font-weight: 600;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding: 0;
+    color: var(--primary-text-color);
+}
+
+label {
+    display: block;
+    margin-bottom: 0.8rem;
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+
+input[type="date"],
+textarea {
+    width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+    background-color: #333;
+    border: 1px solid #444;
+    color: var(--primary-text-color);
+    border-radius: 16px;
+    font-size: 1.1rem;
+    font-family: inherit;
+}
+
+textarea {
+    resize: vertical;
+}
+
+#emotion-ratings {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+.emotion-entry {
+    padding-left: 16px;
+    border-left-width: 5px;
+    border-left-style: solid;
+}
+
+.emotion-red { border-color: var(--color-red); }
+.emotion-green { border-color: var(--color-green); }
+
+.emotion-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
+.emotion-label span:first-child {
+    font-size: 1.2rem;
+}
+
+.slider-value {
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.slider-description {
+    font-size: 0.9rem;
+    color: var(--secondary-text-color);
+    min-height: 1.2em;
+    text-align: right;
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 12px;
+    background: #444;
+    border-radius: 8px;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 30px;
+    height: 30px;
+    background: var(--primary-text-color);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 5px solid var(--surface-color);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 30px;
+    height: 30px;
+    background: var(--primary-text-color);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 5px solid var(--surface-color);
+}
+
+button[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 18px;
+    border: none;
+    background: #FFFFFF;
+    color: #121212;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: 700;
+    border-radius: 9999px; /* Fully rounded */
+    transition: transform 0.2s;
+}
+
+button[type="submit"]:hover {
+    transform: scale(1.02);
+}
+
+#entries-log {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.entry {
+    background: #2a2a2a;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    margin-bottom: 0;
+    border-radius: 20px;
+}
+
+.entry h3 {
+    margin-top: 0;
+    font-size: 1.3rem;
+}
+
+.entry ul {
+    list-style: none;
+    padding: 0;
+}
+
+.entry li {
+    padding: 6px 0;
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+}
+
+.emotion-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 14px;
+    flex-shrink: 0;
+}
+.indicator-red { background-color: var(--color-red); }
+.indicator-green { background-color: var(--color-green); }
+.indicator-default { background-color: var(--secondary-text-color); }
+
+.entry-notes {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.entry-notes h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+}
+
+.entry-notes p {
+    margin: 0;
+    color: var(--secondary-text-color);
+}
