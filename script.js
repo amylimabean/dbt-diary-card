@@ -103,15 +103,56 @@ document.addEventListener('DOMContentLoaded', () => {
         entries.sort((a, b) => new Date(b.date) - new Date(a.date));
         localStorage.setItem('diaryEntries', JSON.stringify(entries));
     }
+    
+    function getStartOfWeek(d) {
+        const date = new Date(d);
+        const day = date.getDay();
+        const diff = date.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+        return new Date(date.setDate(diff));
+    }
 
     function loadEntries() {
         const entries = getEntries();
         entriesLog.innerHTML = '<h2>Past Entries</h2>';
         if (entries.length === 0) {
-            entriesLog.style.display = 'none';
+            entriesLog.parentElement.style.display = 'none';
         } else {
-            entriesLog.style.display = 'block';
-            entries.forEach(displayEntry);
+            entriesLog.parentElement.style.display = 'block';
+
+            const groupedEntries = entries.reduce((acc, entry) => {
+                const entryDate = new Date(entry.date + 'T00:00:00');
+                const weekStart = getStartOfWeek(entryDate);
+                const weekStartString = getFormattedDate(weekStart);
+
+                if (!acc[weekStartString]) {
+                    acc[weekStartString] = [];
+                }
+                acc[weekStartString].push(entry);
+                return acc;
+            }, {});
+
+            for (const weekStartString in groupedEntries) {
+                const weekEntries = groupedEntries[weekStartString];
+                const weekContainer = document.createElement('div');
+                weekContainer.classList.add('week-container');
+
+                const weekEnd = new Date(weekStartString);
+                weekEnd.setDate(weekEnd.getDate() + 6);
+
+                const options = { month: 'long', day: 'numeric' };
+                const weekStartFormatted = new Date(weekStartString + 'T00:00:00').toLocaleDateString('en-US', options);
+                const weekEndFormatted = weekEnd.toLocaleDateString('en-US', options);
+
+                weekContainer.innerHTML = `<h3 class="week-header">Week of ${weekStartFormatted} - ${weekEndFormatted}</h3>`;
+                
+                const entriesList = document.createElement('div');
+                entriesList.classList.add('weekly-entries');
+                weekEntries.forEach(entry => {
+                    entriesList.appendChild(createEntryElement(entry));
+                });
+                weekContainer.appendChild(entriesList);
+                entriesLog.appendChild(weekContainer);
+            }
         }
     }
 
@@ -125,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return emotion ? emotion.color : 'default';
     }
 
-    function displayEntry(entry) {
+    function createEntryElement(entry) {
         const entryElement = document.createElement('div');
         entryElement.classList.add('entry');
         
@@ -145,12 +186,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
         entryElement.innerHTML = `
-            <h3>${displayDate.toLocaleDateString('en-US', options)}</h3>
+            <h4>${displayDate.toLocaleDateString('en-US', options)}</h4>
             ${emotionHtml}
             ${notesHtml}
         `;
-        
-        entriesLog.appendChild(entryElement);
+        return entryElement;
     }
 
     initialize();

@@ -57,14 +57,6 @@ form, section#entries-section {
     border: none;
 }
 
-legend {
-    font-weight: 600;
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-    padding: 0;
-    color: var(--primary-text-color);
-}
-
 label {
     display: block;
     margin-bottom: 0.8rem;
@@ -72,7 +64,6 @@ label {
     font-size: 1.1rem;
 }
 
-input[type="date"],
 textarea {
     width: 100%;
     padding: 16px;
@@ -83,9 +74,6 @@ textarea {
     border-radius: 16px;
     font-size: 1.1rem;
     font-family: inherit;
-}
-
-textarea {
     resize: vertical;
 }
 
@@ -169,6 +157,7 @@ button[type="submit"] {
     font-weight: 700;
     border-radius: 9999px; /* Fully rounded */
     transition: transform 0.2s;
+    margin-top: 1rem;
 }
 
 button[type="submit"]:hover {
@@ -176,6 +165,26 @@ button[type="submit"]:hover {
 }
 
 #entries-log {
+    display: grid;
+    gap: 2rem;
+}
+
+.week-container {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.5rem;
+}
+
+.week-container:first-child {
+    border-top: none;
+    padding-top: 0;
+}
+
+.week-header {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.4rem;
+}
+
+.weekly-entries {
     display: grid;
     gap: 1.5rem;
 }
@@ -188,9 +197,10 @@ button[type="submit"]:hover {
     border-radius: 20px;
 }
 
-.entry h3 {
+.entry h4 {
     margin-top: 0;
     font-size: 1.3rem;
+    color: var(--primary-text-color);
 }
 
 .entry ul {
