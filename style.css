@@ -193,12 +193,12 @@ button[type="submit"]:hover {
 
 #entries-log {
     display: grid;
-    gap: 2rem;
+    gap: 1rem;
 }
 
 .week-container {
     border-top: 1px solid var(--border-color);
-    padding-top: 1.5rem;
+    padding-top: 1rem;
 }
 
 .week-container:first-child {
@@ -207,13 +207,41 @@ button[type="submit"]:hover {
 }
 
 .week-header {
-    margin: 0 0 1.5rem 0;
+    margin: 0;
     font-size: 1.4rem;
+    cursor: pointer;
+    position: relative;
+    padding-right: 25px; /* Space for the icon */
+}
+
+.week-header::after {
+    content: '+';
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: var(--secondary-text-color);
+}
+
+.week-container.expanded .week-header::after {
+    content: '−';
 }
 
 .weekly-entries {
     display: grid;
     gap: 1.5rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, margin-top 0.3s ease-out;
+    margin-top: 0;
+}
+
+.week-container.expanded .weekly-entries {
+    max-height: 1000px; /* Arbitrary large value */
+    margin-top: 1.5rem;
+    transition: max-height 0.4s ease-in, margin-top 0.3s ease-in;
 }
 
 .entry {
@@ -239,7 +267,7 @@ button[type="submit"]:hover {
     padding: 6px 0;
     display: flex;
     align-items: center;
-    font-size: 1.1rem;
+    font-s_ize: 1.1rem;
 }
 
 .emotion-indicator {

@@ -147,15 +147,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 const weekStartFormatted = new Date(weekStartString + 'T00:00:00').toLocaleDateString('en-US', options);
                 const weekEndFormatted = weekEnd.toLocaleDateString('en-US', options);
 
-                weekContainer.innerHTML = `<h3 class="week-header">Week of ${weekStartFormatted} - ${weekEndFormatted}</h3>`;
+                const weekHeader = document.createElement('h3');
+                weekHeader.classList.add('week-header');
+                weekHeader.textContent = `Week of ${weekStartFormatted} - ${weekEndFormatted}`;
                 
                 const entriesList = document.createElement('div');
                 entriesList.classList.add('weekly-entries');
                 weekEntries.forEach(entry => {
                     entriesList.appendChild(createEntryElement(entry));
                 });
+                
+                weekContainer.appendChild(weekHeader);
                 weekContainer.appendChild(entriesList);
                 entriesLog.appendChild(weekContainer);
+                
+                weekHeader.addEventListener('click', () => {
+                    weekContainer.classList.toggle('expanded');
+                });
             }
         }
     }
