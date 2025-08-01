@@ -20,12 +20,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const entriesLog = document.getElementById('entries-log');
     const notableMomentsInput = document.getElementById('notable-moments');
     const dateDisplay = document.getElementById('date-display');
+    const emailReportBtn = document.getElementById('email-report-btn');
 
     function initialize() {
         populateEmotionFields();
         loadEntries();
         setCurrentDateDisplay();
         diaryForm.addEventListener('submit', handleFormSubmit);
+        emailReportBtn.addEventListener('click', handleEmailReport);
     }
 
     function populateEmotionFields() {
@@ -107,17 +109,19 @@ document.addEventListener('DOMContentLoaded', () => {
     function getStartOfWeek(d) {
         const date = new Date(d);
         const day = date.getDay();
-        const diff = date.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+        const diff = date.getDate() - day + (day === 0 ? -6 : 1); 
         return new Date(date.setDate(diff));
     }
 
     function loadEntries() {
         const entries = getEntries();
-        entriesLog.innerHTML = '<h2>Past Entries</h2>';
+        const entriesSection = document.getElementById('entries-section');
+        entriesLog.innerHTML = '';
+
         if (entries.length === 0) {
-            entriesLog.parentElement.style.display = 'none';
+            entriesSection.style.display = 'none';
         } else {
-            entriesLog.parentElement.style.display = 'block';
+            entriesSection.style.display = 'block';
 
             const groupedEntries = entries.reduce((acc, entry) => {
                 const entryDate = new Date(entry.date + 'T00:00:00');
@@ -172,8 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         let emotionHtml = '<ul>';
         for (const [emotion, rating] of Object.entries(entry.emotions)) {
-            const color = getEmotionColor(emotion);
-            emotionHtml += `<li><div class="emotion-indicator indicator-${color}"></div><strong>${emotion}:</strong> ${rating}</li>`;
+            emotionHtml += `<li><strong>${emotion}:</strong> ${rating}</li>`;
         }
         emotionHtml += '</ul>';
 
@@ -181,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (entry.notes) {
             notesHtml = `<div class="entry-notes"><h4>Notable Moments:</h4><p>${entry.notes.replace(/\n/g, '<br>')}</p></div>`;
         }
-
+        
         const displayDate = new Date(entry.date + 'T00:00:00');
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
@@ -191,6 +194,56 @@ document.addEventListener('DOMContentLoaded', () => {
             ${notesHtml}
         `;
         return entryElement;
+    }
+
+    function handleEmailReport() {
+        const entries = getEntries();
+        const today = new Date();
+        const lastWeek = new Date(today);
+        lastWeek.setDate(today.getDate() - 7);
+
+        const lastWeekStart = getStartOfWeek(lastWeek);
+        const lastWeekEnd = new Date(lastWeekStart);
+        lastWeekEnd.setDate(lastWeekStart.getDate() + 6);
+
+        const lastWeekEntries = entries.filter(entry => {
+            const entryDate = new Date(entry.date + 'T00:00:00');
+            return entryDate >= lastWeekStart && entryDate <= lastWeekEnd;
+        });
+
+        if (lastWeekEntries.length === 0) {
+            alert("No entries found for last week.");
+            return;
+        }
+
+        const subjectDateFormat = { month: '2-digit', day: '2-digit' };
+        const weekStartSubj = lastWeekStart.toLocaleDateString('en-US', subjectDateFormat);
+        const weekEndSubj = lastWeekEnd.toLocaleDateString('en-US', subjectDateFormat);
+
+        const recipient = 'drjohnsonpsychology@gmail.com';
+        const subject = `Amy's Diary Cards Week of ${weekStartSubj}-${weekEndSubj}`;
+        
+        let body = `Hi Grace,\n\nHere are my diary card entries for the week:\n\n`;
+
+        lastWeekEntries.forEach(entry => {
+            const displayDate = new Date(entry.date + 'T00:00:00');
+            const options = { weekday: 'long', month: 'long', day: 'numeric' };
+            body += `----------------------------------------\n`;
+            body += `Date: ${displayDate.toLocaleDateString('en-US', options)}\n`;
+
+            body += `Emotions:\n`;
+            for (const [emotion, rating] of Object.entries(entry.emotions)) {
+                body += `  - ${emotion}: ${rating}/10\n`;
+            }
+
+            if (entry.notes) {
+                body += `Notable Moments:\n  - ${entry.notes}\n`;
+            }
+            body += `\n`;
+        });
+        
+        const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.location.href = mailtoLink;
     }
 
     initialize();

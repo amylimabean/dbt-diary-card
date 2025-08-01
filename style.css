@@ -164,6 +164,33 @@ button[type="submit"]:hover {
     transform: scale(1.02);
 }
 
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+    margin: 0;
+}
+
+#email-report-btn {
+    background-color: #444;
+    color: var(--primary-text-color);
+    border: 1px solid #555;
+    padding: 10px 20px;
+    border-radius: 9999px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+#email-report-btn:hover {
+    background-color: #555;
+}
+
+
 #entries-log {
     display: grid;
     gap: 2rem;
