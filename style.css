@@ -241,6 +241,7 @@ button[type="submit"]:hover {
 .week-container.expanded .weekly-entries {
     max-height: 1000px; /* Arbitrary large value */
     margin-top: 1.5rem;
+    overflow-y: auto;
     transition: max-height 0.4s ease-in, margin-top 0.3s ease-in;
 }
 
