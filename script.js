@@ -76,8 +76,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleFormSubmit(event) {
         event.preventDefault();
         
+        const now = new Date();
+        let entryDate = new Date(now);
+
+        // If it's before 5 AM, attribute the entry to the previous day
+        if (now.getHours() < 5) {
+            entryDate.setDate(entryDate.getDate() - 1);
+        }
+
         const entry = {
-            date: getFormattedDate(),
+            id: now.toISOString(), // Unique ID for every save
+            date: getFormattedDate(entryDate), // "Logical" date for grouping
             emotions: {},
             notes: notableMomentsInput.value
         };
@@ -96,13 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function saveEntry(entry) {
         const entries = getEntries();
-        const index = entries.findIndex(e => e.date === entry.date);
-        if (index > -1) {
-            entries[index] = entry; 
-        } else {
-            entries.push(entry);
-        }
-        entries.sort((a, b) => new Date(b.date) - new Date(a.date));
+        entries.push(entry); // Always add a new entry, never overwrite
+        // Sort by the unique timestamp ID to ensure correct chronological order
+        entries.sort((a, b) => new Date(b.id) - new Date(a.id)); 
         localStorage.setItem('diaryEntries', JSON.stringify(entries));
     }
     
@@ -153,6 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const entriesList = document.createElement('div');
                 entriesList.classList.add('weekly-entries');
+                // Sort entries within the week by their timestamp
+                weekEntries.sort((a, b) => new Date(b.id) - new Date(a.id));
                 weekEntries.forEach(entry => {
                     entriesList.appendChild(createEntryElement(entry));
                 });
@@ -193,11 +200,11 @@ document.addEventListener('DOMContentLoaded', () => {
             notesHtml = `<div class="entry-notes"><h4>Notable Moments:</h4><p>${entry.notes.replace(/\n/g, '<br>')}</p></div>`;
         }
         
-        const displayDate = new Date(entry.date + 'T00:00:00');
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const entryTimestamp = new Date(entry.id);
+        const options = { weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' };
 
         entryElement.innerHTML = `
-            <h4>${displayDate.toLocaleDateString('en-US', options)}</h4>
+            <h4>${entryTimestamp.toLocaleDateString('en-US', options)}</h4>
             ${emotionHtml}
             ${notesHtml}
         `;
@@ -233,11 +240,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         let body = `Hi Grace,\n\nHere are my diary card entries for the week:\n\n`;
 
+        lastWeekEntries.sort((a, b) => new Date(a.id) - new Date(b.id)); // Sort chronologically for email
         lastWeekEntries.forEach(entry => {
-            const displayDate = new Date(entry.date + 'T00:00:00');
-            const options = { weekday: 'long', month: 'long', day: 'numeric' };
+            const entryTimestamp = new Date(entry.id);
+            const options = { weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' };
             body += `----------------------------------------\n`;
-            body += `Date: ${displayDate.toLocaleDateString('en-US', options)}\n`;
+            body += `Date: ${entryTimestamp.toLocaleDateString('en-US', options)}\n`;
 
             body += `Emotions:\n`;
             for (const [emotion, rating] of Object.entries(entry.emotions)) {
