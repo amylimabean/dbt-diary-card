@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
             body += `\n`;
         });
         
-        const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        const mailtoLink = `googlegmail:///co?to=${recipient}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         window.location.href = mailtoLink;
     }
 
