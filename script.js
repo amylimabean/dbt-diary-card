@@ -28,6 +28,18 @@ document.addEventListener('DOMContentLoaded', () => {
         setCurrentDateDisplay();
         diaryForm.addEventListener('submit', handleFormSubmit);
         emailReportBtn.addEventListener('click', handleEmailReport);
+        
+        // Temporary: Add a way to check localStorage data
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+                const data = localStorage.getItem('diaryEntries');
+                if (data) {
+                    alert(`Found ${JSON.parse(data).length} entries in localStorage:\n\n${data.substring(0, 200)}...`);
+                } else {
+                    alert('No entries found in localStorage for this browser');
+                }
+            }
+        });
     }
 
     function populateEmotionFields() {
@@ -109,7 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Sort by the unique timestamp ID to ensure correct chronological order
         entries.sort((a, b) => new Date(b.id) - new Date(a.id)); 
         localStorage.setItem('diaryEntries', JSON.stringify(entries));
-        console.log('Entry saved, total entries now:', entries.length, entry);
     }
     
     function getStartOfWeek(d) {
