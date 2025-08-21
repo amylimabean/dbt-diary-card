@@ -215,31 +215,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleEmailReport() {
         const entries = getEntries();
-        const today = new Date();
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(today.getDate() - 7);
+        
+        // Get the last 7 entries (most recent)
+        const last7Entries = entries.slice(0, 7);
 
-        const recentEntries = entries.filter(entry => {
-            const entryDate = new Date(entry.id);
-            return entryDate >= sevenDaysAgo && entryDate <= today;
-        });
-
-        if (recentEntries.length === 0) {
-            alert("No entries found for the past 7 days.");
+        if (last7Entries.length === 0) {
+            alert("No entries found.");
             return;
         }
 
-        const subjectDateFormat = { month: '2-digit', day: '2-digit' };
-        const startDateSubj = sevenDaysAgo.toLocaleDateString('en-US', subjectDateFormat);
-        const endDateSubj = today.toLocaleDateString('en-US', subjectDateFormat);
-
         const recipient = 'drjohnsonpsychology@gmail.com';
-        const subject = `Amy's Diary Cards ${startDateSubj} - ${endDateSubj}`;
+        const subject = `Amy's Diary Cards - Last ${last7Entries.length} Entries`;
         
-        let body = `Hi Grace,\n\nHere are my diary card entries for the past 7 days:\n\n`;
+        let body = `Hi Grace,\n\nHere are my last ${last7Entries.length} diary card entries:\n\n`;
 
-        recentEntries.sort((a, b) => new Date(a.id) - new Date(b.id)); // Sort chronologically for email
-        recentEntries.forEach(entry => {
+        // Sort chronologically for email (oldest first)
+        const entriesForEmail = [...last7Entries].sort((a, b) => new Date(a.id) - new Date(b.id));
+        entriesForEmail.forEach(entry => {
             const entryTimestamp = new Date(entry.id);
             const options = { weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' };
             body += `----------------------------------------\n`;
