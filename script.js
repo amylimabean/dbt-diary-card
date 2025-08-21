@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const notableMomentsInput = document.getElementById('notable-moments');
     const dateDisplay = document.getElementById('date-display');
     const emailReportBtn = document.getElementById('email-report-btn');
+    const showDataBtn = document.getElementById('show-data-btn');
 
     function initialize() {
         populateEmotionFields();
@@ -28,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setCurrentDateDisplay();
         diaryForm.addEventListener('submit', handleFormSubmit);
         emailReportBtn.addEventListener('click', handleEmailReport);
+        showDataBtn.addEventListener('click', handleShowRawData);
     }
 
     function populateEmotionFields() {
@@ -250,6 +252,15 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         window.location.href = mailtoLink;
+    }
+
+    function handleShowRawData() {
+        const rawData = localStorage.getItem('diaryEntries');
+        if (rawData) {
+            alert(`Found ${JSON.parse(rawData).length} entries in storage:\n\n${rawData.substring(0, 500)}${rawData.length > 500 ? '...' : ''}`);
+        } else {
+            alert('No data found in localStorage');
+        }
     }
 
     initialize();
