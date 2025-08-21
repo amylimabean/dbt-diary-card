@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const notableMomentsInput = document.getElementById('notable-moments');
     const dateDisplay = document.getElementById('date-display');
     const emailReportBtn = document.getElementById('email-report-btn');
-    const showDataBtn = document.getElementById('show-data-btn');
 
     function initialize() {
         populateEmotionFields();
@@ -29,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setCurrentDateDisplay();
         diaryForm.addEventListener('submit', handleFormSubmit);
         emailReportBtn.addEventListener('click', handleEmailReport);
-        showDataBtn.addEventListener('click', handleShowRawData);
     }
 
     function populateEmotionFields() {
@@ -125,12 +123,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const entriesSection = document.getElementById('entries-section');
         entriesLog.innerHTML = '';
 
-        // Always show the entries section so buttons are accessible
-        entriesSection.style.display = 'block';
-
         if (entries.length === 0) {
-            entriesLog.innerHTML = '<p>No entries found. Use "Show Raw Data" to check if data exists in storage.</p>';
+            entriesSection.style.display = 'none';
         } else {
+            entriesSection.style.display = 'block';
 
             const groupedEntries = entries.reduce((acc, entry) => {
                 const entryDate = new Date(entry.date + 'T00:00:00');
@@ -219,23 +215,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleEmailReport() {
         const entries = getEntries();
-        
-        // Get the last 7 entries (most recent)
-        const last7Entries = entries.slice(0, 7);
+        const today = new Date();
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(today.getDate() - 7);
 
-        if (last7Entries.length === 0) {
-            alert("No entries found.");
+        const recentEntries = entries.filter(entry => {
+            const entryDate = new Date(entry.id);
+            return entryDate >= sevenDaysAgo && entryDate <= today;
+        });
+
+        if (recentEntries.length === 0) {
+            alert("No entries found for the past 7 days.");
             return;
         }
 
-        const recipient = 'drjohnsonpsychology@gmail.com';
-        const subject = `Amy's Diary Cards - Last ${last7Entries.length} Entries`;
-        
-        let body = `Hi Grace,\n\nHere are my last ${last7Entries.length} diary card entries:\n\n`;
+        const subjectDateFormat = { month: '2-digit', day: '2-digit' };
+        const startDateSubj = sevenDaysAgo.toLocaleDateString('en-US', subjectDateFormat);
+        const endDateSubj = today.toLocaleDateString('en-US', subjectDateFormat);
 
-        // Sort chronologically for email (oldest first)
-        const entriesForEmail = [...last7Entries].sort((a, b) => new Date(a.id) - new Date(b.id));
-        entriesForEmail.forEach(entry => {
+        const recipient = 'drjohnsonpsychology@gmail.com';
+        const subject = `Amy's Diary Cards ${startDateSubj} - ${endDateSubj}`;
+        
+        let body = `Hi Grace,\n\nHere are my diary card entries for the past 7 days:\n\n`;
+
+        recentEntries.sort((a, b) => new Date(a.id) - new Date(b.id)); // Sort chronologically for email
+        recentEntries.forEach(entry => {
             const entryTimestamp = new Date(entry.id);
             const options = { weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' };
             body += `----------------------------------------\n`;
@@ -254,15 +258,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         window.location.href = mailtoLink;
-    }
-
-    function handleShowRawData() {
-        const rawData = localStorage.getItem('diaryEntries');
-        if (rawData) {
-            alert(`Found ${JSON.parse(rawData).length} entries in storage:\n\n${rawData.substring(0, 500)}${rawData.length > 500 ? '...' : ''}`);
-        } else {
-            alert('No data found in localStorage');
-        }
     }
 
     initialize();
