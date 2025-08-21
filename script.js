@@ -140,7 +140,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 return acc;
             }, {});
 
-            for (const weekStartString in groupedEntries) {
+            const weekKeys = Object.keys(groupedEntries).sort((a, b) => new Date(b) - new Date(a));
+
+            for (const weekStartString of weekKeys) {
                 const weekEntries = groupedEntries[weekStartString];
                 const weekContainer = document.createElement('div');
                 weekContainer.classList.add('week-container');
@@ -214,34 +216,30 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleEmailReport() {
         const entries = getEntries();
         const today = new Date();
-        const lastWeek = new Date(today);
-        lastWeek.setDate(today.getDate() - 7);
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(today.getDate() - 7);
 
-        const lastWeekStart = getStartOfWeek(lastWeek);
-        const lastWeekEnd = new Date(lastWeekStart);
-        lastWeekEnd.setDate(lastWeekStart.getDate() + 6);
-
-        const lastWeekEntries = entries.filter(entry => {
-            const entryDate = new Date(entry.date + 'T00:00:00');
-            return entryDate >= lastWeekStart && entryDate <= lastWeekEnd;
+        const recentEntries = entries.filter(entry => {
+            const entryDate = new Date(entry.id);
+            return entryDate >= sevenDaysAgo && entryDate <= today;
         });
 
-        if (lastWeekEntries.length === 0) {
-            alert("No entries found for last week.");
+        if (recentEntries.length === 0) {
+            alert("No entries found for the past 7 days.");
             return;
         }
 
         const subjectDateFormat = { month: '2-digit', day: '2-digit' };
-        const weekStartSubj = lastWeekStart.toLocaleDateString('en-US', subjectDateFormat);
-        const weekEndSubj = lastWeekEnd.toLocaleDateString('en-US', subjectDateFormat);
+        const startDateSubj = sevenDaysAgo.toLocaleDateString('en-US', subjectDateFormat);
+        const endDateSubj = today.toLocaleDateString('en-US', subjectDateFormat);
 
         const recipient = 'drjohnsonpsychology@gmail.com';
-        const subject = `Amy's Diary Cards Week of ${weekStartSubj}-${weekEndSubj}`;
+        const subject = `Amy's Diary Cards ${startDateSubj} - ${endDateSubj}`;
         
-        let body = `Hi Grace,\n\nHere are my diary card entries for the week:\n\n`;
+        let body = `Hi Grace,\n\nHere are my diary card entries for the past 7 days:\n\n`;
 
-        lastWeekEntries.sort((a, b) => new Date(a.id) - new Date(b.id)); // Sort chronologically for email
-        lastWeekEntries.forEach(entry => {
+        recentEntries.sort((a, b) => new Date(a.id) - new Date(b.id)); // Sort chronologically for email
+        recentEntries.forEach(entry => {
             const entryTimestamp = new Date(entry.id);
             const options = { weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' };
             body += `----------------------------------------\n`;
