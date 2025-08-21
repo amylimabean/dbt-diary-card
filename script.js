@@ -109,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Sort by the unique timestamp ID to ensure correct chronological order
         entries.sort((a, b) => new Date(b.id) - new Date(a.id)); 
         localStorage.setItem('diaryEntries', JSON.stringify(entries));
+        console.log('Entry saved, total entries now:', entries.length, entry);
     }
     
     function getStartOfWeek(d) {
