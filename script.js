@@ -121,6 +121,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Sort by the unique timestamp ID to ensure correct chronological order
         entries.sort((a, b) => new Date(b.id) - new Date(a.id)); 
         localStorage.setItem('diaryEntries', JSON.stringify(entries));
+        
+        // Check if we need to send automatic backup
+        checkAndSendAutoBackup(entries);
     }
     
     function getStartOfWeek(d) {
@@ -270,6 +273,68 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         window.location.href = mailtoLink;
+    }
+
+    function checkAndSendAutoBackup(entries) {
+        // Get the count of entries since last backup
+        const lastBackupCount = parseInt(localStorage.getItem('lastBackupCount') || '0');
+        const currentCount = entries.length;
+        
+        // If we have 3 or more new entries since last backup, send auto backup
+        if (currentCount - lastBackupCount >= 3) {
+            sendAutoBackup(entries, lastBackupCount);
+            localStorage.setItem('lastBackupCount', currentCount.toString());
+        }
+    }
+
+    function sendAutoBackup(entries, lastBackupCount) {
+        // Get the new entries since last backup
+        const newEntries = entries.slice(0, entries.length - lastBackupCount);
+        
+        if (newEntries.length === 0) return;
+
+        const backupEmail = 'amylima.design@gmail.com';
+        const subject = `Diary Card Auto-Backup - ${newEntries.length} New Entries`;
+        
+        let body = `Hi Amy,\n\nThis is an automatic backup of your ${newEntries.length} most recent diary card entries:\n\n`;
+
+        // Sort chronologically for email (oldest first)
+        const entriesForEmail = [...newEntries].sort((a, b) => new Date(a.id) - new Date(b.id));
+        entriesForEmail.forEach(entry => {
+            const entryTimestamp = new Date(entry.id);
+            const options = { weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' };
+            body += `----------------------------------------\n`;
+            body += `Date: ${entryTimestamp.toLocaleDateString('en-US', options)}\n`;
+
+            body += `Emotions:\n`;
+            for (const [emotion, rating] of Object.entries(entry.emotions)) {
+                body += `  - ${emotion}: ${rating}/10\n`;
+            }
+
+            if (entry.notes) {
+                body += `Notable Moments:\n  - ${entry.notes}\n`;
+            }
+            body += `\n`;
+        });
+        
+        body += `\nThis backup was automatically triggered after saving your ${entries.length}${getOrdinalSuffix(entries.length)} entry.\n\n`;
+        body += `Total entries in your diary: ${entries.length}`;
+        
+        const mailtoLink = `mailto:${backupEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        
+        // Show a notification and open email client
+        if (confirm(`Auto-backup triggered! ${newEntries.length} new entries will be emailed to ${backupEmail}. Click OK to open email client.`)) {
+            window.location.href = mailtoLink;
+        }
+    }
+
+    function getOrdinalSuffix(num) {
+        const j = num % 10;
+        const k = num % 100;
+        if (j === 1 && k !== 11) return "st";
+        if (j === 2 && k !== 12) return "nd";
+        if (j === 3 && k !== 13) return "rd";
+        return "th";
     }
 
     initialize();
