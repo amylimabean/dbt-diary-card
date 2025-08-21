@@ -125,10 +125,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const entriesSection = document.getElementById('entries-section');
         entriesLog.innerHTML = '';
 
+        // Always show the entries section so buttons are accessible
+        entriesSection.style.display = 'block';
+
         if (entries.length === 0) {
-            entriesSection.style.display = 'none';
+            entriesLog.innerHTML = '<p>No entries found. Use "Show Raw Data" to check if data exists in storage.</p>';
         } else {
-            entriesSection.style.display = 'block';
 
             const groupedEntries = entries.reduce((acc, entry) => {
                 const entryDate = new Date(entry.date + 'T00:00:00');
